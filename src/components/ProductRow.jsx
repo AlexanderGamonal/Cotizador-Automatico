@@ -80,10 +80,8 @@ export default function ProductRow({ row, index, onChange, onRemove }) {
       </div>
 
       {/* Calculated values */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-slate-50 rounded-lg px-3 py-2">
-        {calc('Costo base s/ IGV', costBase)}
-        {calc('Valor venta s/ IGV', saleValue)}
-        {calc('IGV (18%)', igvAmount)}
+      <div className="grid grid-cols-2 gap-3 bg-slate-50 rounded-lg px-3 py-2">
+        {calc('Precio unit. c/ IGV', finalPrice)}
         <div className="flex flex-col">
           <span className="text-xs text-slate-400 mb-0.5">Total línea</span>
           <span className="text-sm font-bold text-blue-700">S/ {fmt(lineTotal)}</span>

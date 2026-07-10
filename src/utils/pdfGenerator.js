@@ -46,7 +46,7 @@ export function generatePDF({ empresa, cliente, ruc, whatsapp, rows }) {
 
   // ── Products table ───────────────────────────────────────────────────────
   const tableRows = rows.map((row, i) => {
-    const { saleValue, igvAmount, finalPrice, lineTotal } = calcProduct(
+    const { finalPrice, lineTotal } = calcProduct(
       row.costWithIGV,
       row.margin,
       row.qty
@@ -55,8 +55,6 @@ export function generatePDF({ empresa, cliente, ruc, whatsapp, rows }) {
       i + 1,
       row.name || '—',
       parseFloat(row.qty) || 1,
-      `S/ ${fmt(saleValue)}`,
-      `S/ ${fmt(igvAmount)}`,
       `S/ ${fmt(finalPrice)}`,
       `S/ ${fmt(lineTotal)}`,
     ];
@@ -64,24 +62,22 @@ export function generatePDF({ empresa, cliente, ruc, whatsapp, rows }) {
 
   autoTable(doc, {
     startY: 65,
-    head: [['N°', 'Descripción', 'Cant.', 'V.Venta s/IGV', 'IGV (18%)', 'P.Final c/IGV', 'Total']],
+    head: [['N°', 'Descripción', 'Cant.', 'Precio unit. c/ IGV', 'Total']],
     body: tableRows,
     headStyles: {
       fillColor: [37, 99, 235],
       textColor: 255,
       fontStyle: 'bold',
-      fontSize: 8.5,
+      fontSize: 9,
     },
-    bodyStyles: { fontSize: 8.5, textColor: [51, 65, 85] },
+    bodyStyles: { fontSize: 9, textColor: [51, 65, 85] },
     alternateRowStyles: { fillColor: [248, 250, 252] },
     columnStyles: {
       0: { halign: 'center', cellWidth: 10 },
-      1: { cellWidth: 55 },
-      2: { halign: 'center', cellWidth: 14 },
-      3: { halign: 'right', cellWidth: 27 },
-      4: { halign: 'right', cellWidth: 22 },
-      5: { halign: 'right', cellWidth: 28 },
-      6: { halign: 'right', cellWidth: 26 },
+      1: { cellWidth: 90 },
+      2: { halign: 'center', cellWidth: 18 },
+      3: { halign: 'right', cellWidth: 38 },
+      4: { halign: 'right', cellWidth: 26 },
     },
     margin: { left: 14, right: 14 },
   });
@@ -92,8 +88,7 @@ export function generatePDF({ empresa, cliente, ruc, whatsapp, rows }) {
   autoTable(doc, {
     startY: finalY,
     body: [
-      ['Subtotal sin IGV', `S/ ${fmt(totals.subtotal)}`],
-      ['IGV (18%)', `S/ ${fmt(totals.igvTotal)}`],
+      ['IGV incluido (18%)', `S/ ${fmt(totals.igvTotal)}`],
       ['TOTAL GENERAL', `S/ ${fmt(totals.grandTotal)}`],
     ],
     bodyStyles: { fontSize: 9, textColor: [51, 65, 85] },
@@ -103,7 +98,7 @@ export function generatePDF({ empresa, cliente, ruc, whatsapp, rows }) {
     },
     margin: { left: 116, right: 14 },
     didParseCell(data) {
-      if (data.row.index === 2) {
+      if (data.row.index === 1) {
         data.cell.styles.fillColor = [37, 99, 235];
         data.cell.styles.textColor = [255, 255, 255];
         data.cell.styles.fontStyle = 'bold';
