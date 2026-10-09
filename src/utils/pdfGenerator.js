@@ -1,10 +1,11 @@
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
-import { calcProduct, calcTotals, fmt } from './calculations';
+import { calcProduct, calcTotals, fmt, DEFAULT_RATES } from './calculations';
 
-export function generatePDF({ empresa, cliente, ruc, whatsapp, rows }) {
+export function generatePDF({ empresa, cliente, ruc, whatsapp, rows: allRows, rates = DEFAULT_RATES }) {
+  const rows = allRows.filter((r) => parseFloat(r.costWithIGV) > 0);
   const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
-  const totals = calcTotals(rows);
+  const totals = calcTotals(rows, rates);
   const today = new Date().toLocaleDateString('es-PE', {
     day: '2-digit',
     month: '2-digit',
@@ -49,7 +50,8 @@ export function generatePDF({ empresa, cliente, ruc, whatsapp, rows }) {
     const { finalPrice, lineTotal } = calcProduct(
       row.costWithIGV,
       row.margin,
-      row.qty
+      row.qty,
+      rates
     );
     return [
       i + 1,
@@ -89,7 +91,7 @@ export function generatePDF({ empresa, cliente, ruc, whatsapp, rows }) {
     startY: finalY,
     body: [
       ['Subtotal', `S/ ${fmt(totals.subtotal)}`],
-      ['IGV (18%)', `S/ ${fmt(totals.igvTotal)}`],
+      [`IGV (${Math.round(rates.igv * 100)}%)`, `S/ ${fmt(totals.igvTotal)}`],
       ['TOTAL GENERAL', `S/ ${fmt(totals.grandTotal)}`],
     ],
     bodyStyles: { fontSize: 9, textColor: [51, 65, 85] },
