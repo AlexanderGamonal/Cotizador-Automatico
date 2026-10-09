@@ -1,7 +1,7 @@
 import { calcProduct, fmt } from '../utils/calculations';
 
 export default function ProductRow({ row, index, onChange, onRemove }) {
-  const { costBase, saleValue, igvAmount, finalPrice, lineTotal } = calcProduct(
+  const { error, finalPrice, lineTotal, profit, realMarginPct } = calcProduct(
     row.costWithIGV,
     row.margin,
     row.qty
@@ -10,12 +10,13 @@ export default function ProductRow({ row, index, onChange, onRemove }) {
   const numInput = (key, placeholder, min = '0') => (
     <input
       type="number"
+      inputMode="decimal"
       min={min}
       step="0.01"
       value={row[key]}
       onChange={(e) => onChange(index, key, e.target.value)}
       placeholder={placeholder}
-      className="w-full border border-slate-200 rounded-lg px-2 py-1.5 text-sm text-slate-800 placeholder-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+      className="w-full border border-slate-200 rounded-lg px-2 py-1.5 text-base sm:text-sm text-slate-800 placeholder-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
     />
   );
 
@@ -80,8 +81,14 @@ export default function ProductRow({ row, index, onChange, onRemove }) {
       </div>
 
       {/* Calculated values */}
-      <div className="grid grid-cols-2 gap-3 bg-slate-50 rounded-lg px-3 py-2">
+      {error && <p className="text-xs text-red-500">{error}</p>}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-slate-50 rounded-lg px-3 py-2">
         {calc('Precio unit. c/ IGV', finalPrice)}
+        {calc('Utilidad unit.', profit)}
+        <div className="flex flex-col">
+          <span className="text-xs text-slate-400 mb-0.5">Margen real</span>
+          <span className="text-sm font-medium text-slate-600">{fmt(realMarginPct)}%</span>
+        </div>
         <div className="flex flex-col">
           <span className="text-xs text-slate-400 mb-0.5">Total línea</span>
           <span className="text-sm font-bold text-blue-700">S/ {fmt(lineTotal)}</span>

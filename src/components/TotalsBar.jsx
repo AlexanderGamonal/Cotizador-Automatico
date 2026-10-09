@@ -28,6 +28,10 @@ export default function TotalsBar({ rows, client }) {
       {/* Totals */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-end gap-3 sm:gap-8 mb-5">
         <div className="text-center sm:text-right">
+          <p className="text-xs text-slate-400 uppercase tracking-wide">Subtotal</p>
+          <p className="text-lg font-semibold text-slate-700">S/ {fmt(subtotal)}</p>
+        </div>
+        <div className="text-center sm:text-right">
           <p className="text-xs text-slate-400 uppercase tracking-wide">IGV (18%)</p>
           <p className="text-lg font-semibold text-slate-700">S/ {fmt(igvTotal)}</p>
         </div>

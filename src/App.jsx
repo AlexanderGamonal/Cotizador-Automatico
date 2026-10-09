@@ -4,7 +4,8 @@ import ProductRow from './components/ProductRow';
 import TotalsBar from './components/TotalsBar';
 import './index.css';
 
-const emptyRow = () => ({ name: '', costWithIGV: '', margin: '', qty: '1' });
+let nextRowId = 1;
+const emptyRow = () => ({ id: nextRowId++, name: '', costWithIGV: '', margin: '', qty: '1' });
 
 const defaultClient = { empresa: '', cliente: '', ruc: '', whatsapp: '' };
 
@@ -51,7 +52,7 @@ export default function App() {
 
           {rows.map((row, i) => (
             <ProductRow
-              key={i}
+              key={row.id}
               row={row}
               index={i}
               onChange={handleRowChange}
@@ -71,9 +72,12 @@ export default function App() {
 
         <div className="bg-blue-50 border border-blue-100 rounded-xl px-4 py-3 text-xs text-blue-700 space-y-1">
           <p className="font-semibold">Como se calcula el precio:</p>
-          <p>1. Costo base = Precio compra / 1.18 (se quita el IGV pagado)</p>
-          <p>2. Valor venta = Costo base x (1 + Margen% + 1% renta)</p>
-          <p>3. Precio final = Valor venta x 1.18 (se agrega el IGV de venta)</p>
+          <p>1. Costo base = Costo con IGV / 1.18 (se quita el IGV pagado)</p>
+          <p>2. Precio sin IGV = Costo base / (1 − Margen% − 1% renta)</p>
+          <p>3. Precio final = Precio sin IGV x 1.18 (se agrega el IGV de venta)</p>
+          <p className="text-blue-500">
+            El margen es sobre el precio de venta. Incluye flete y otros gastos.
+          </p>
         </div>
       </div>
     </div>

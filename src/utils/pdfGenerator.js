@@ -88,7 +88,8 @@ export function generatePDF({ empresa, cliente, ruc, whatsapp, rows }) {
   autoTable(doc, {
     startY: finalY,
     body: [
-      ['IGV incluido (18%)', `S/ ${fmt(totals.igvTotal)}`],
+      ['Subtotal', `S/ ${fmt(totals.subtotal)}`],
+      ['IGV (18%)', `S/ ${fmt(totals.igvTotal)}`],
       ['TOTAL GENERAL', `S/ ${fmt(totals.grandTotal)}`],
     ],
     bodyStyles: { fontSize: 9, textColor: [51, 65, 85] },
@@ -98,7 +99,7 @@ export function generatePDF({ empresa, cliente, ruc, whatsapp, rows }) {
     },
     margin: { left: 116, right: 14 },
     didParseCell(data) {
-      if (data.row.index === 1) {
+      if (data.row.index === 2) {
         data.cell.styles.fillColor = [37, 99, 235];
         data.cell.styles.textColor = [255, 255, 255];
         data.cell.styles.fontStyle = 'bold';
@@ -111,7 +112,7 @@ export function generatePDF({ empresa, cliente, ruc, whatsapp, rows }) {
   doc.setFontSize(8);
   doc.setTextColor(148, 163, 184);
   doc.text(
-    'Precios en Soles (S/). IGV 18% incluido. Esta cotización tiene una validez de 15 días.',
+    'Precios en Soles (S/). Los precios unitarios incluyen IGV 18%. Esta cotización tiene una validez de 15 días.',
     14,
     noteY
   );
