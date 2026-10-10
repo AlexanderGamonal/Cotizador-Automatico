@@ -154,7 +154,7 @@ export default function QuoteEditor({ initial, settings, rates, clients, product
       <TotalsBar
         rows={rows}
         client={client}
-        empresa={settings.empresa}
+        company={settings}
         rates={rates}
         saved={saved}
         saving={saving}

@@ -1,5 +1,6 @@
 import { calcTotals, fmt } from '../utils/calculations';
-import { generatePDF } from '../utils/pdfGenerator';
+import { buildPdfModel } from '../utils/pdfModel';
+import { downloadPDF, sharePDF } from '../utils/pdfGenerator';
 
 const IconWhatsApp = () => (
   <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -9,27 +10,31 @@ const IconWhatsApp = () => (
 
 const btn = 'flex-1 whitespace-nowrap flex items-center justify-center gap-2 font-semibold py-3 px-4 rounded-xl transition text-sm min-h-12 disabled:bg-slate-200 disabled:text-slate-400';
 
-export default function TotalsBar({ rows, client, empresa, rates, saved, saving, error, onSave }) {
+export default function TotalsBar({ rows, client, company, rates, saved, saving, error, onSave }) {
   const { subtotal, igvTotal, grandTotal } = calcTotals(rows, rates);
   const hasRows = rows.some((r) => parseFloat(r.costWithIGV) > 0);
   const total = saved ? saved.total : grandTotal;
 
-  function handleWhatsApp() {
+  const pdfModel = () => buildPdfModel({ company, client, quote: saved, rows, rates });
+
+  async function handleWhatsApp() {
     const num = client.whatsapp.replace(/\D/g, '');
+    const msg =
+      `Hola ${client.cliente || 'estimado cliente'}, le saluda ${company.empresa || 'nuestra empresa'}.\n` +
+      `Adjunto encontrará la cotización${saved ? ` ${saved.number}` : ''} solicitada.\n` +
+      `*Total: S/ ${fmt(total)}*\n` +
+      `Quedo a su disposición para cualquier consulta. ¡Que tenga un excelente día!`;
+    // En celular se comparte el PDF directamente; si no es posible, se abre el chat con el texto.
+    if (await sharePDF(pdfModel(), msg)) return;
     if (!num) {
       alert('Ingresa el número de WhatsApp del cliente.');
       return;
     }
-    const msg =
-      `Hola ${client.cliente || 'estimado cliente'}, le saluda ${empresa || 'nuestra empresa'}.\n` +
-      `Adjunto encontrará la cotización${saved ? ` ${saved.number}` : ''} solicitada.\n` +
-      `*Total: S/ ${fmt(total)}*\n` +
-      `Quedo a su disposición para cualquier consulta. ¡Que tenga un excelente día!`;
     window.open(`https://wa.me/${num}?text=${encodeURIComponent(msg)}`, '_blank');
   }
 
   function handlePDF() {
-    generatePDF({ ...client, empresa, rows, rates });
+    downloadPDF(pdfModel());
   }
 
   return (
